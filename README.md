@@ -1,1 +1,1 @@
-# ci-ci-demo
+# ci-cd-demo repo
