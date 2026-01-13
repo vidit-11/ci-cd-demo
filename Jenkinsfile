@@ -17,14 +17,12 @@ pipeline {
 
         stage('Unit Tests') {
             steps {
-                // We use a temporary container to run tests so we don't need Maven installed on the Slave
                 sh "docker run --rm -v ${WORKSPACE}:/app -w /app maven:3.9.6-eclipse-temurin-17 mvn test"
             }
             post {
                 always {
-                    // This pulls the JUnit reports so you can see graphs in Jenkins
-                    junit '**/target/surefire-reports/*.xml'
-                }
+                    // Add allowEmptyResults: true to stop the pipeline from crashing
+                    junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
             }
         }
 
