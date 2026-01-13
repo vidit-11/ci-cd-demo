@@ -1,11 +1,21 @@
-# Use a tiny version of Java (Alpine Linux)
+# --- Stage 1: Build & Test ---
+FROM maven:3.9.6-eclipse-temurin-17-alpine AS build
+WORKDIR /app
+
+# Copy pom.xml and download dependencies (cached layer)
+COPY pom.xml .
+RUN mvn dependency:go-offline
+
+# Copy source code and build the JAR
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+# --- Stage 2: Tiny Runtime ---
 FROM eclipse-temurin:17-jre-alpine
+WORKDIR /app
 
-# Set the working directory
-WORKDIR /i-cd-demo
+# Copy only the compiled JAR from the build stage
+COPY --from=build /app/target/*.jar app.jar
 
-# Copy your JAR file into the container
-COPY target/*.jar app.jar
-
-# Run the app with "Lean" memory settings
-ENTRYPOINT ["java", "-Xms128m", "-Xmx200m", "-jar", "app.jar"]
+EXPOSE 8080
+ENTRYPOINT ["java", "-jar", "app.jar"]
