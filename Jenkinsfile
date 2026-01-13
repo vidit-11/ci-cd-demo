@@ -23,6 +23,7 @@ pipeline {
                 always {
                     // Add allowEmptyResults: true to stop the pipeline from crashing
                     junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
+                }
             }
         }
 
