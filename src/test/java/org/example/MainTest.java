@@ -1,33 +1,27 @@
 package org.example;
 
 import org.junit.jupiter.api.Test;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.servlet.MockMvc;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.containsString;
+
+@SpringBootTest
+@AutoConfigureMockMvc
 public class MainTest {
 
+    @Autowired
+    private MockMvc mockMvc;
+
     @Test
-    public void testMainOutput() {
-        // Redirect System.out to capture console output
-        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-        PrintStream originalOut = System.out;
-        System.setOut(new PrintStream(outContent));
-
-        try {
-            // Run the main method
-            Main.main(new String[]{});
-            
-            String output = outContent.toString();
-
-            // Assertions
-            assertTrue(output.contains("Hello and welcome!"), "Should contain welcome message");
-            assertTrue(output.contains("i = 1"), "Should print first iteration");
-            assertTrue(output.contains("i = 5"), "Should print final iteration");
-            
-        } finally {
-            // Restore the original System.out
-            System.setOut(originalOut);
-        }
+    public void testHomePageContent() throws Exception {
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("CI/CD Pipeline Success!")));
     }
 }
