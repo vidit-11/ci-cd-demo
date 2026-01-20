@@ -9,7 +9,7 @@ RUN mvn dependency:go-offline
 
 # Copy source code and build the JAR
 COPY src ./src
-RUN mvn clean package -DskipTests
+RUN RUN mvn clean package
 
 # --- Stage 2: Tiny Runtime ---
 FROM eclipse-temurin:17-jre-alpine
