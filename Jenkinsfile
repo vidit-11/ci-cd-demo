@@ -15,17 +15,21 @@ pipeline {
             }
         }
 
-        stage('Unit Tests') {
-            steps {
-                // Fixed permission: Runs as the Jenkins user inside the container
-                sh "docker run --rm -u \$(id -u):\$(id -g) -v ${WORKSPACE}:/app -w /app maven:3.9.6-eclipse-temurin-17 mvn clean test -Duser.home=/app"
-            }
-            post {
-                always {
-                    junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
-                }
-            }
+    stage('Unit Tests') {
+        steps {
+        // -e npm_config_cache=/app/.npm redirects the npm cache to the workspace
+        // -Duser.home=/app ensures Maven also uses the workspace for its settings
+            sh """
+                docker run --rm \
+                -u \$(id -u):\$(id -g) \
+                -e npm_config_cache=/app/.npm \
+                -v ${WORKSPACE}:/app \
+                -w /app \
+                maven:3.9.6-eclipse-temurin-17 \
+                mvn clean test -Duser.home=/app
+        """
         }
+    }
 
         stage('Build & Scan') {
             steps {
