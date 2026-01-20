@@ -18,7 +18,7 @@ pipeline {
         stage('Unit Tests') {
             steps {
                 // Fixed permission: Runs as the Jenkins user inside the container
-                sh "docker run --rm -u \$(id -u):\$(id -g) -v ${WORKSPACE}:/app -w /app maven:3.9.6-eclipse-temurin-17 mvn clean test"
+                sh "docker run --rm -u \$(id -u):\$(id -g) -v ${WORKSPACE}:/app -w /app maven:3.9.6-eclipse-temurin-17 mvn clean test -Duser.home=/app"
             }
             post {
                 always {
