@@ -1,3 +1,4 @@
+
 # --- Stage 1: Build & Test ---
 FROM maven:3.9.6-eclipse-temurin-17-alpine AS build
 WORKDIR /app
