@@ -1,4 +1,4 @@
-package org.example; // This MUST match the package in Main.java
+package org.example;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.hamcrest.Matchers.containsString;
 
-@SpringBootTest(classes = Main.class) // Explicitly tell Spring where the config is
+@SpringBootTest
 @AutoConfigureMockMvc
 public class MainTest {
 
