@@ -14,6 +14,6 @@ public class Main {
     }
     @GetMapping("/")
     public String home() {
-        return "<h1>CI/CD Pipeline Success!</h1><p>The Java Web App is running.</p>";
+        return "<h1>CI/CD Pipeline Success!!</h1><p>The Java Web App is running.</p>";
     }
 }
