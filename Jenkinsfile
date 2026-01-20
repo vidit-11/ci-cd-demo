@@ -25,17 +25,6 @@ pipeline {
                     junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
                 }
             }
-            stage('Deploy') {
-                steps {
-                    // Stop and remove the old container if it exists
-                    sh "docker stop ${CONTAINER_NAME} || true"
-                    sh "docker rm ${CONTAINER_NAME} || true"
-                
-                    // Run the new container in detached mode (-d) with port mapping
-                    sh "docker run -d --name ${CONTAINER_NAME} -p 8080:8080 ${REGISTRY}:latest"
-                }
-            }
-        }
 
         stage('Build & Scan') {
             steps {
@@ -63,6 +52,17 @@ pipeline {
             steps {
                 sh "docker rmi ${REGISTRY}:${BUILD_NUMBER} || true"
                 sh "docker image prune -f"
+            }
+        }
+        stage('Deploy') {
+                steps {
+                    // Stop and remove the old container if it exists
+                    sh "docker stop ${CONTAINER_NAME} || true"
+                    sh "docker rm ${CONTAINER_NAME} || true"
+                
+                    // Run the new container in detached mode (-d) with port mapping
+                    sh "docker run -d --name ${CONTAINER_NAME} -p 8080:8080 ${REGISTRY}:latest"
+                }
             }
         }
     }
