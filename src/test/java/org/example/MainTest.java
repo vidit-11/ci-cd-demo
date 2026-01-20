@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.hamcrest.Matchers.containsString;
 
-@SpringBootTest(classes = Main.class) // This points the test to your Main class
+@SpringBootTest
 @AutoConfigureMockMvc
 public class MainTest {
 
