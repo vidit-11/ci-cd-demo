@@ -3,6 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <packaging>war</packaging>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -22,9 +23,10 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-tomcat</artifactId>
+        <scope>provided</scope>
+    </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -44,6 +46,50 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.2</version>
             </plugin>
+                 <plugin>
+            <groupId>com.github.eirslett</groupId>
+            <artifactId>frontend-maven-plugin</artifactId>
+            <version>1.15.0</version>
+            <configuration>
+                <workingDirectory>frontend</workingDirectory>
+                <installDirectory>target</installDirectory>
+            </configuration>
+            <executions>
+                <execution>
+                    <id>install node and npm</id>
+                    <goals><goal>install-node-and-npm</goal></goals>
+                    <configuration><nodeVersion>v18.17.0</nodeVersion></configuration>
+                </execution>
+                <execution>
+                    <id>npm install</id>
+                    <goals><goal>npm</goal></goals>
+                    <configuration><arguments>install</arguments></configuration>
+                </execution>
+                <execution>
+                    <id>npm build</id>
+                    <goals><goal>npm</goal></goals>
+                    <configuration><arguments>run build</arguments></configuration>
+                </execution>
+            </executions>
+         </plugin>
+                  <plugin>
+            <artifactId>maven-resources-plugin</artifactId>
+            <executions>
+                <execution>
+                    <id>copy-resources</id>
+                    <phase>process-resources</phase>
+                    <goals><goal>copy-resources</goal></goals>
+                    <configuration>
+                        <outputDirectory>${project.build.outputDirectory}/static</outputDirectory>
+                        <resources>
+                            <resource>
+                                <directory>frontend/build</directory>
+                            </resource>
+                        </resources>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
         </plugins>
     </build>
 </project>
