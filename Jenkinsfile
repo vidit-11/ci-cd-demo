@@ -17,21 +17,20 @@ pipeline {
 
         stage('Unit Tests') {
             steps {
+                // Fixed permission issue by running as current user 
                 sh "docker run --rm -u \$(id -u):\$(id -g) -v ${WORKSPACE}:/app -w /app maven:3.9.6-eclipse-temurin-17 mvn clean test"
             }
             post {
                 always {
-                    // Add allowEmptyResults: true to stop the pipeline from crashing
-                    junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
+                    junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml' [cite: 5]
                 }
             }
+        }
 
         stage('Build & Scan') {
             steps {
-                sh "docker build -t ${REGISTRY}:${BUILD_NUMBER} ."
-                sh "docker tag ${REGISTRY}:${BUILD_NUMBER} ${REGISTRY}:latest"
-                // Optional: Add a vulnerability scan here if you have Trivy installed
-                // sh "trivy image ${REGISTRY}:${BUILD_NUMBER}"
+                sh "docker build -t ${REGISTRY}:${BUILD_NUMBER} ." [cite: 6]
+                sh "docker tag ${REGISTRY}:${BUILD_NUMBER} ${REGISTRY}:latest" [cite: 7]
             }
         }
 
@@ -39,30 +38,28 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', 
                                                 passwordVariable: 'DOCKER_HUB_PASSWORD', 
-                                                usernameVariable: 'DOCKER_HUB_USERNAME')]) {
-                    sh 'echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin'
+                                                usernameVariable: 'DOCKER_HUB_USERNAME')]) { [cite: 8, 9]
+                    sh 'echo $DOCKER_HUB_PASSWORD | docker login -u $DOCKER_HUB_USERNAME --password-stdin' [cite: 10]
                     sh "docker push ${REGISTRY}:${BUILD_NUMBER}"
                     sh "docker push ${REGISTRY}:latest"
                 }
             }
         }
 
-
         stage('Cleanup') {
             steps {
-                sh "docker rmi ${REGISTRY}:${BUILD_NUMBER} || true"
+                sh "docker rmi ${REGISTRY}:${BUILD_NUMBER} || true" [cite: 11]
                 sh "docker image prune -f"
             }
         }
+
         stage('Deploy') {
-                steps {
-                    // Stop and remove the old container if it exists
-                    sh "docker stop ${CONTAINER_NAME} || true"
-                    sh "docker rm ${CONTAINER_NAME} || true"
-                
-                    // Run the new container in detached mode (-d) with port mapping
-                    sh "docker run -d --name ${CONTAINER_NAME} -p 8080:8080 ${REGISTRY}:latest"
-                }
+            steps {
+                // Remove old container to avoid name conflicts
+                sh "docker stop ${CONTAINER_NAME} || true"
+                sh "docker rm ${CONTAINER_NAME} || true"
+                // Run new container in background (-d) with port mapping 8080
+                sh "docker run -d --name ${CONTAINER_NAME} -p 8080:8080 ${REGISTRY}:latest"
             }
         }
     }
