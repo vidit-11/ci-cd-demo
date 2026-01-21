@@ -28,7 +28,6 @@ pipeline {
                 sh """
                     docker run --rm \
                     -u \$(id -u):\$(id -g) \
-                    -m 512m \
                     -e npm_config_cache=/app/.npm \
                     -v ${WORKSPACE}:/app \
                     -w /app \
