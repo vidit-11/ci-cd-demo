@@ -39,7 +39,7 @@ pipeline {
 
         stage('Docker Build & Push') {
             steps {
-                sh "docker build -t ${REGISTRY}:latest ."
+                sh "docker build --no-cache -t ${REGISTRY}:latest ."
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', 
                                                 passwordVariable: 'PASS', 
                                                 usernameVariable: 'USER')]) {
