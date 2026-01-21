@@ -11,4 +11,4 @@ WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 
 # Limit Java memory to 256MB so it doesn't crash the 1GB t2.micro
-ENTRYPOINT ["java", "-Xmx256m", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Xmx300m", "-Xms128m", "-jar", "app.jar"]
