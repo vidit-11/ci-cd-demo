@@ -21,7 +21,7 @@ RUN mvn clean package -DskipTests -Dskip.installnodenpm -Dskip.npm
 # Use a JRE-only image for the smallest possible runtime
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
-# Copy only the final JAR artifact from the backend-build stage
+# Copy only the final JAR from the backend-build stage
 COPY --from=backend-build /app/target/*.jar app.jar
 # Expose the port your Spring Boot app runs on (default is 8080)
 EXPOSE 8080
