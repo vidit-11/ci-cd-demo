@@ -12,7 +12,8 @@ FROM maven:3.8.7-eclipse-temurin-17 AS backend-build
 WORKDIR /app/backend
 # Copy the React build output into the Spring Boot static resources directory
 COPY --from=frontend-build /app/frontend/build/ ./src/main/resources/static/
-COPY ./backend/pom.xml ./
+COPY pom.xml ./
+COPY src ./src
 RUN mvn dependency:go-offline package -Dmaven.test.skip=true
 # The above command creates a JAR file in the target directory
 
@@ -21,7 +22,7 @@ RUN mvn dependency:go-offline package -Dmaven.test.skip=true
 FROM openjdk:17-jre-slim
 WORKDIR /app
 # Copy only the final JAR artifact from the backend-build stage
-COPY --from=backend-build /app/backend/target/*.jar app.jar
+COPY --from=backend-build /app/target/*.jar app.jar
 # Expose the port your Spring Boot app runs on (default is 8080)
 EXPOSE 8080
 # Run the application
