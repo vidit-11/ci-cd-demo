@@ -1,14 +1,28 @@
-# Stage 1: Build Java + React
-FROM maven:3.9.6-eclipse-temurin-17-alpine AS build
-WORKDIR /app
-COPY . .
-# Run build as root here to avoid permission issues during the internal npm install
-RUN mvn clean package -DskipTests
+# --- Stage 1: Build the React frontend ---
+FROM node:20-alpine AS frontend-build
+WORKDIR /app/frontend
+COPY ./frontend/package*.json ./
+RUN npm install
+COPY ./frontend/. ./
+RUN npm run build
 
-# Stage 2: Tiny Runtime
-FROM eclipse-temurin:17-jre-alpine
-WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
+# --- Stage 2: Build the Spring Boot backend ---
+# We use a JDK image to build the Java application
+FROM maven:3.9-openjdk-17-slim AS backend-build
+WORKDIR /app/backend
+# Copy the React build output into the Spring Boot static resources directory
+COPY --from=frontend-build /app/frontend/build/ ./src/main/resources/static/
+COPY ./backend/pom.xml ./
+RUN mvn dependency:go-offline package -Dmaven.test.skip=true
+# The above command creates a JAR file in the target directory
 
-# Limit Java memory to 256MB so it doesn't crash the 1GB t2.micro
-ENTRYPOINT ["java", "-Xmx300m", "-Xms128m", "-jar", "app.jar"]
+# --- Stage 3: Final runtime image (minimal JRE) ---
+# Use a JRE-only image for the smallest possible runtime
+FROM openjdk:17-jre-slim
+WORKDIR /app
+# Copy only the final JAR artifact from the backend-build stage
+COPY --from=backend-build /app/backend/target/*.jar app.jar
+# Expose the port your Spring Boot app runs on (default is 8080)
+EXPOSE 8080
+# Run the application
+ENTRYPOINT ["java", "-jar", "app.jar"]
