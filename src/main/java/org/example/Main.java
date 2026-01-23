@@ -51,7 +51,6 @@ public class Main extends SpringBootServletInitializer {
     class GlobalHandler {
         @ExceptionHandler(Exception.class)
         public ResponseEntity<String> handleAll(Exception ex) {
-            // This line specifically triggers the RED color in Dozzle
             logger.error("CRITICAL ERROR: {}", ex.getMessage(), ex); 
             return new ResponseEntity<>("Error occurred: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
