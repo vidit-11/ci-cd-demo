@@ -19,7 +19,7 @@ RUN mvn clean package -DskipTests -Dskip.installnodenpm -Dskip.npm
 
 # --- Stage 3: Final runtime image (minimal JRE) ---
 # Use a JRE-only image for the smallest possible runtime
-FROM openjdk:17-jre-slim
+FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 # Copy only the final JAR artifact from the backend-build stage
 COPY --from=backend-build /app/target/*.jar app.jar
