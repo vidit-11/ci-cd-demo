@@ -1,5 +1,7 @@
 package org.example;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -7,12 +9,17 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 @SpringBootApplication
-@Controller // Changed to @Controller to handle both API and Routing
+@Controller
 public class Main extends SpringBootServletInitializer {
 
-    // Required for WAR deployment in Tomcat
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
+
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
         return application.sources(Main.class);
@@ -22,14 +29,34 @@ public class Main extends SpringBootServletInitializer {
         SpringApplication.run(Main.class, args);
     }
 
-    // Existing API Endpoint
+    // --- TEST ENDPOINTS ---
+
     @GetMapping("/api/status")
     @ResponseBody
     public String getStatus() {
-        return "Backend is running and connected!";
+        logger.info("Status check requested"); // Will show as GREEN/INFO
+        return "Backend is running!";
     }
 
-    // Forward all non-API paths to React's index.html
+    @GetMapping("/api/test-error")
+    @ResponseBody
+    public String triggerError() {
+        logger.warn("Manual error triggered by developer!"); // Will show as YELLOW
+        throw new RuntimeException("This is a test exception for Dozzle colors!");
+    }
+
+    // --- GLOBAL EXCEPTION HANDLER ---
+    // This ensures that when a JAR error happens, it is logged and sent to Dozzle
+    @RestControllerAdvice
+    class GlobalHandler {
+        @ExceptionHandler(Exception.class)
+        public ResponseEntity<String> handleAll(Exception ex) {
+            // This line specifically triggers the RED color in Dozzle
+            logger.error("CRITICAL ERROR: {}", ex.getMessage(), ex); 
+            return new ResponseEntity<>("Error occurred: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @GetMapping(value = "{path:[^\\.]*}")
     public String redirect() {
         return "forward:/index.html";
