@@ -8,7 +8,7 @@ RUN npm run build
 
 # --- Stage 2: Build the Spring Boot backend ---
 # We use a JDK image to build the Java application
-FROM maven:3.9-openjdk-17-slim AS backend-build
+FROM maven:3.8.7-eclipse-temurin-17 AS backend-build
 WORKDIR /app/backend
 # Copy the React build output into the Spring Boot static resources directory
 COPY --from=frontend-build /app/frontend/build/ ./src/main/resources/static/
