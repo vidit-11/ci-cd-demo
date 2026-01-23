@@ -35,7 +35,7 @@ pipeline {
                 sh """
                     docker stop ${CONTAINER_NAME} || true
                     docker rm ${CONTAINER_NAME} || true
-                    docker run -d --name ${CONTAINER_NAME} -p 8080:8080 ${REGISTRY}:latest
+                    docker run -d --name ${CONTAINER_NAME} -p 8080:8080 -v /home/ubuntu/app-logs:/app/logs ${REGISTRY}:latest
                     docker image prune -f
                 """
             }
