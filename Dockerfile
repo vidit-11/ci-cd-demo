@@ -14,7 +14,7 @@ WORKDIR /app/backend
 COPY --from=frontend-build /app/frontend/build/ ./src/main/resources/static/
 COPY pom.xml ./
 COPY src ./src
-RUN mvn dependency:go-offline package -Dmaven.test.skip=true
+RUN mvn clean package -DskipTests -Dskip.installnodenpm -Dskip.npm
 # The above command creates a JAR file in the target directory
 
 # --- Stage 3: Final runtime image (minimal JRE) ---
