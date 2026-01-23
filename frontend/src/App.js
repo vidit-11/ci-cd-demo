@@ -13,7 +13,7 @@ function App() {
 
   return (
     <div style={{ textAlign: 'center', marginTop: '50px', fontFamily: 'Arial' }}>
-      <h1>hiiiiiii</h1>
+      <h1>Java + React Integrated Pipeline!!!!!!!</h1>
       <div style={{ padding: '20px', border: '1px solid #ccc', display: 'inline-block' }}>
         <p><strong>Server Status:</strong> {message}</p>
       </div>
