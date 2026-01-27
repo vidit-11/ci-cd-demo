@@ -1,5 +1,7 @@
 pipeline {
-    agent { label 'docker-agent' }
+    agent { 
+        label 'docker-agent' 
+    }
 
     environment {
         DOCKER_HUB_USER = 'vidit11'
