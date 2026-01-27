@@ -17,8 +17,6 @@ pipeline {
 
     stage('Unit Tests') {
         steps {
-        // -e npm_config_cache=/app/.npm redirects the npm cache to the workspace
-        // -Duser.home=/app ensures Maven also uses the workspace for its settings
             sh """
                 docker run --rm \
                 -u \$(id -u):\$(id -g) \
@@ -40,7 +38,6 @@ pipeline {
 
         stage('Push to Docker Hub') {
             steps {
-                // Fixed syntax: ensure everything is properly grouped in the list []
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', 
                                                 passwordVariable: 'DOCKER_HUB_PASSWORD', 
                                                 usernameVariable: 'DOCKER_HUB_USERNAME')]) {
@@ -62,7 +59,6 @@ pipeline {
             steps {
                 sh "docker stop ${CONTAINER_NAME} || true"
                 sh "docker rm ${CONTAINER_NAME} || true"
-                // Mapping port 8080 to Tomcat's 8080
                 sh "docker run -d --name ${CONTAINER_NAME} -p 8080:8080 ${REGISTRY}:latest"
             }
         }

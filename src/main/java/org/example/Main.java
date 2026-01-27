@@ -29,7 +29,6 @@ public class Main extends SpringBootServletInitializer {
         SpringApplication.run(Main.class, args);
     }
 
-    // --- TEST ENDPOINTS ---
 
     @GetMapping("/api/status")
     @ResponseBody

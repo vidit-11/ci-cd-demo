@@ -18,7 +18,6 @@ pipeline {
 
         stage('Docker Build & Push') {
             steps {
-                // The Dockerfile handles the React and Maven builds internally
                 sh "docker build --no-cache -t ${REGISTRY}:latest ."
                 
                 withCredentials([usernamePassword(credentialsId: 'docker-hub-creds', 
