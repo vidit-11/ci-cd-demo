@@ -1,0 +1,28 @@
+image: atlassian/default-image:4
+
+pipelines:
+  branches:
+    main:
+      - step:
+          name: Build and Push (Main Branch)
+          services:
+            - docker
+          caches:
+            - docker
+          script:
+
+            - IMAGE_NAME="your-dockerhub-username/your-app-name"
+            - COMMIT_TAG=${BITBUCKET_COMMIT::7}
+            
+
+            - echo "Building Docker image..."
+            - docker build -t $IMAGE_NAME:$COMMIT_TAG -t $IMAGE_NAME:latest .
+
+
+            - echo "Logging into Docker registry..."
+            - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+
+            - echo "Pushing images to registry..."
+            - docker push $IMAGE_NAME:$COMMIT_TAG
+            - docker push $IMAGE_NAME:latest
