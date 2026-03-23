@@ -33,9 +33,9 @@ RUN groupadd -r appuser && useradd -r -g appuser -d /app appuser
 
 # Copy extracted layers in order of change frequency, ensuring correct ownership
 COPY --chown=appuser:appuser --from=builder /extracted/dependencies/ ./
-COPY --chown=appuser:appuser /extracted/spring-boot-loader/ ./
-COPY --chown=appuser:appuser /extracted/snapshot-dependencies/ ./
-COPY --chown=appuser:appuser /extracted/application/ ./
+COPY --chown=appuser:appuser --from=builder /extracted/spring-boot-loader/ ./
+COPY --chown=appuser:appuser --from=builder /extracted/snapshot-dependencies/ ./
+COPY --chown=appuser:appuser --from=builder /extracted/application/ ./
 
 # Switch to non-root user
 USER appuser
@@ -43,13 +43,12 @@ USER appuser
 # Expose the application port
 EXPOSE 8080
 
-# JVM flags optimized for containers
+# JVM flags optimized for containers (removed legacy urandom flag)
 ENV JAVA_OPTS="-XX:+UseContainerSupport \
                -XX:MaxRAMPercentage=75.0 \
                -XX:InitialRAMPercentage=50.0 \
                -XX:+UseG1GC \
-               -XX:+ExitOnOutOfMemoryError \
-               -Djava.security.egd=file:/dev/./urandom"
+               -XX:+ExitOnOutOfMemoryError"
 
 # Health check using Spring Boot Actuator
 HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=3 \
